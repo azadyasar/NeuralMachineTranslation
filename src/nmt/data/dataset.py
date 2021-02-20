@@ -37,8 +37,8 @@ class Dataset(object):
       
       for line in tqdm(lines):
         en_sent, tr_sent = line.split('\t')
-        en_idx = torch.tensor(self.trg_vocab.encode_and_pack(en_sent))
-        tr_idx = torch.tensor(self.src_vocab.encode_and_pack(tr_sent))
+        en_idx = torch.tensor(self.trg_vocab.encode_and_pack(en_sent.lower()))
+        tr_idx = torch.tensor(self.src_vocab.encode_and_pack(tr_sent.lower()))
         
         self.indexed_source_seqs.append(tr_idx)
         self.indexed_target_seqs.append(en_idx)
