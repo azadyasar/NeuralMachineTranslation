@@ -7,6 +7,8 @@ from torchtext.data import BucketIterator
 from tqdm import tqdm
 import time
 import datetime
+import numpy as np
+
 import logging
 logger = logging.getLogger("Trainer")
 
@@ -33,7 +35,7 @@ class Trainer(object):
     best_valid_loss = float('inf')
     train_losses, valid_losses = [], []
     
-    for epoch in range(N_EPOCHS):
+    for epoch in range(self.n_epochs):
         start_time = time.time()
         
         train_loss = self.train_(train_iterator)

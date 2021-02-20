@@ -46,7 +46,7 @@ class Evaluator(object):
     logger.info(f'| Test Loss: {test_loss:.3f} | Test PPL: {np.exp(test_loss):7.3f} |')
     return test_loss
   
-  def translate_sentence_vectorized(self, src_tensor):
+  def translate_sentence_vectorized(self, src_tensor, max_len=50):
     self.model.eval()
     trg_field = self.config.trg_vocab.vocab
     
@@ -109,8 +109,7 @@ class Evaluator(object):
               break
             tmp.append(trg_field.vocab.itos[i])
           _trgs.append([tmp])
-          
         trgs += _trgs
-        pred_trg, _ = self.translate_sentence_vectorized(src)
+        pred_trg, _ = self.translate_sentence_vectorized(src, max_len=max_len)
         pred_trgs += pred_trg
     return pred_trgs, trgs, bleu_score(pred_trgs, trgs)

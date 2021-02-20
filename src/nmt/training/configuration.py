@@ -22,8 +22,6 @@ class TransformerModelConfig(object):
                dec_pf_dim: int,
                enc_dropout: float,
                dec_dropout: float,
-               src_pad_idx: int,
-               trg_pad_idx: int,
                device: str,
                src_vocab: Vocabulary,
                trg_vocab: Vocabulary,
@@ -40,12 +38,11 @@ class TransformerModelConfig(object):
     self.dec_pf_dim = dec_pf_dim
     self.enc_dropout = enc_dropout
     self.dec_dropout = dec_dropout
-    self.src_pad_idx = src_pad_idx
-    self.trg_pad_idx = trg_pad_idx
     self.device = device
-    # TODO 
     self.src_vocab = src_vocab
     self.trg_vocab = trg_vocab
+    self.src_pad_idx = self.src_vocab.get_pad_idx()
+    self.trg_pad_idx = self.trg_vocab.get_pad_idx()
     self.max_length = max_length
     self.save_model_path = save_model_path
     

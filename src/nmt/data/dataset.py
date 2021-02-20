@@ -17,7 +17,7 @@ class Dataset(object):
                                                                                 fields=data_fields,
                                                                                 skip_header=True)
     
-  def create_iterators(self, device: str = 'cpu',batch_sz: int = 128):
+  def create_iterators(self, device: str = 'cpu', batch_sz: int = 128):
     train_iterator, valid_iterator, test_iterator = BucketIterator.splits(
         (self.train_data, self.val_data, self.test_data),
         batch_size=batch_sz,

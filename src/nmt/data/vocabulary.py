@@ -21,5 +21,5 @@ class Vocabulary(object):
     return self.field.vocab.stoi[self.field.pad_token]
   
   @property
-  def vocab() -> Field:
+  def vocab(self) -> Field:
     return self.field
