@@ -22,13 +22,10 @@ class TransformerModelConfig(object):
                dec_pf_dim: int,
                enc_dropout: float,
                dec_dropout: float,
-               src_pad_idx: int,
-               trg_pad_idx: int,
                device: str,
                src_vocab: Vocabulary,
                trg_vocab: Vocabulary,
                max_length: int,
-               batch_sz: int,
                model_path: str = 'transformer_nmt.pt'):
     self.input_dim = input_dim
     self.output_dim = output_dim
@@ -74,7 +71,7 @@ class TransformerModelConfig(object):
                         device=self.device).to(self.device)
 
     logger.info(f"Constructed Transformer model with {count_parameters(model):,} trainable parameters.")
-    model.load_state_dict(torch.load(self.model_path), map_location=self.device)
+    model.load_state_dict(torch.load(self.model_path, map_location=self.device))
     logger.info(f"Loaded parameters.")
     
     return model

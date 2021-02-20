@@ -73,7 +73,7 @@ class TransformerModelConfig(object):
                         device=self.device).to(self.device)
 
     logger.info(f"Constructed Transformer model with {count_parameters(model):,} trainable parameters.")
-    model.load_state_dict(torch.load(self.model_path), map_location=self.device)
+    model.load_state_dict(torch.load(self.model_path, map_location=self.device))
     logger.info(f"Loaded parameters.")
     
     return model

@@ -1,1 +1,2 @@
 from nmt.translation.configuration import TransformerModelConfig
+from nmt.translation.translator import Translator

@@ -3,8 +3,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*transformer_nmt.pt*
 
 *tmp*
+
+*png
 
 # C extensions
 *.so
