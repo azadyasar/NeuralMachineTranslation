@@ -1,9 +1,9 @@
 from nmt.training import TransformerModelConfig
+from nmt.data import Dataset
 from nmt.util import get_lr, epoch_time
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchtext.data import BucketIterator
 from tqdm import tqdm
 import time
 import datetime
@@ -30,17 +30,17 @@ class Trainer(object):
     
     
   def train(self,
-            train_iterator: BucketIterator,
-            valid_iterator: BucketIterator):
+            train_dataset: Dataset,
+            valid_dataset: Dataset):
     best_valid_loss = float('inf')
     train_losses, valid_losses = [], []
     
     for epoch in range(self.n_epochs):
         start_time = time.time()
         
-        train_loss = self.train_(train_iterator)
+        train_loss = self.train_(train_dataset)
         torch.cuda.empty_cache()
-        valid_loss = self.evaluate_(valid_iterator)
+        valid_loss = self.evaluate_(valid_dataset)
         lr = get_lr(self.optimizer)
         self.scheduler.step()
 
@@ -59,11 +59,11 @@ class Trainer(object):
         logger.info(f'\t Val. Loss: {valid_loss:.4f} |  Val. PPL: {np.exp(valid_loss):7.3f}')
         logger.info("---" * 50)
     
-  def train_(self, iterator: BucketIterator):
+  def train_(self, train_dataset: Dataset):
     self.model.train()
     epoch_loss = 0
     
-    for i, batch in tqdm(enumerate(iterator)):  
+    for i, batch in tqdm(enumerate(train_dataset.generate(self.config.batch_sz))):  
         src = batch.src
         trg = batch.trg
         
@@ -87,14 +87,14 @@ class Trainer(object):
         
         epoch_loss += loss.item()   
 
-    return epoch_loss / len(iterator)
+    return epoch_loss / len(train_dataset)
   
-  def evaluate_(self, iterator: BucketIterator):
+  def evaluate_(self, eval_dataset: Dataset):
     self.model.eval()
     epoch_loss = 0
     
     with torch.no_grad():
-        for batch in tqdm(iterator):
+        for batch in tqdm(eval_dataset.generate(self.config.batch_sz)):
             src = batch.src
             trg = batch.trg
 
@@ -112,4 +112,4 @@ class Trainer(object):
             loss = self.criterion(output, trg)
             epoch_loss += loss.item()
         
-    return epoch_loss / len(iterator)
+    return epoch_loss / len(eval_dataset)

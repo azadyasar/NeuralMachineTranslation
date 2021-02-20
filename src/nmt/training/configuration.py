@@ -25,7 +25,8 @@ class TransformerModelConfig(object):
                device: str,
                src_vocab: Vocabulary,
                trg_vocab: Vocabulary,
-               max_length: int = 172,
+               max_length: int,
+               batch_sz: int,
                save_model_path: str = 'transformer_nmt.pt'):
     self.input_dim = input_dim
     self.output_dim = output_dim
@@ -41,9 +42,10 @@ class TransformerModelConfig(object):
     self.device = device
     self.src_vocab = src_vocab
     self.trg_vocab = trg_vocab
-    self.src_pad_idx = self.src_vocab.get_pad_idx()
-    self.trg_pad_idx = self.trg_vocab.get_pad_idx()
+    self.src_pad_idx = self.src_vocab.pad_idx
+    self.trg_pad_idx = self.trg_vocab.pad_idx
     self.max_length = max_length
+    self.batch_sz = batch_sz
     self.save_model_path = save_model_path
     
   def create_model(self):
@@ -71,4 +73,5 @@ class TransformerModelConfig(object):
                         device=self.device).to(self.device)
     model.apply(init_weights)
     logger.info(f"Constructed Transformer model with {count_parameters(model):,} trainable parameters.")
+    logger.info(f"Using device = {self.device}")
     return model

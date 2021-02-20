@@ -5,12 +5,12 @@ from nmt.training import Trainer, TransformerModelConfig
 from nmt.util import get_device
 
 def train_nmt_model(args: argparse.Namespace):
-  source_vocab = Vocabulary(args.src_tokenizer, args.src_vocab)
-  target_vocab = Vocabulary(args.trg_tokenizer, args.trg_vocab)
+  source_vocab = Vocabulary(args.src_vocab)
+  target_vocab = Vocabulary(args.trg_vocab)
   device = get_device()
-  config = TransformerModelConfig(input_dim=len(source_vocab.vocab.vocab),
-                                  output_dim=len(target_vocab.vocab.vocab),
-                                  hid_dim=args.hid_dim,
+  config = TransformerModelConfig(input_dim=len(source_vocab),
+                                  output_dim=len(target_vocab),
+                                  hid_dim=args.hid_dims,
                                   enc_layers=args.enc_layers,
                                   dec_layers=args.dec_layers,
                                   enc_heads=args.enc_heads,
@@ -23,6 +23,7 @@ def train_nmt_model(args: argparse.Namespace):
                                   src_vocab=source_vocab,
                                   trg_vocab=target_vocab,
                                   max_length=args.max_len,
+                                  batch_sz=args.batch_sz,
                                   save_model_path=args.save_model_path)
   
   trainer = Trainer(config=config,
@@ -31,14 +32,24 @@ def train_nmt_model(args: argparse.Namespace):
                     n_epochs=args.n_epochs,
                     clip=args.clip)
   
-  datasets = Dataset(train_path=args.train_dataset,
-                     eval_path=args.eval_dataset,
-                     test_path=args.test_dataset,
-                     src_vocab=source_vocab,
-                     trg_vocab=target_vocab)
-  train_iter, valid_iterator, test_iter = datasets.create_iterators(device=device, batch_sz=args.batch_sz)
+  train_dataset = Dataset(path=args.train_dataset,
+                          src_vocab=source_vocab,
+                          trg_vocab=target_vocab,
+                          device=device)
+  eval_dataset = Dataset(path=args.eval_dataset,
+                          src_vocab=source_vocab,
+                          trg_vocab=target_vocab,
+                          device=device)
+  test_dataset = Dataset(path=args.test_dataset,
+                          src_vocab=source_vocab,
+                          trg_vocab=target_vocab,
+                          device=device)
   
-  trainer.train(train_iter, valid_iterator)
+  train_dataset.read_and_index()
+  eval_dataset.read_and_index()
+  test_dataset.read_and_index()
+  
+  trainer.train(train_dataset=train_dataset, valid_dataset=eval_dataset)
 
 def add_subparser(subparsers: argparse._SubParsersAction):
   parser = subparsers.add_parser('train', help='Train NMT model')
@@ -51,13 +62,9 @@ def add_subparser(subparsers: argparse._SubParsersAction):
   group.add_argument('--test_dataset', required=True,
                      help='test dataset file path')
   group.add_argument('--src_vocab', required=True,
-                     help='source vocab file path')
+                     help='source BPE model file path')
   group.add_argument('--trg_vocab', required=True,
-                     help='target vocab file path')
-  group.add_argument('--src_tokenizer', required=True,
-                     help='source tokenizer file path')
-  group.add_argument('--trg_tokenizer', required=True,
-                     help='target tokenizer file path')
+                     help='target BPE model file path')
   
   group = parser.add_argument_group('Transformer model configurations')
   group.add_argument('--hid_dims', default=256, type=int,

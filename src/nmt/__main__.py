@@ -1,11 +1,8 @@
 import argparse
 from nmt import train_model
 
-def encode_with_trsp(x):
-  pass
-
-def encode_with_ensp(x):
-  pass
+import logging
+logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
