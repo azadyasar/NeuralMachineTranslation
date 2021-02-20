@@ -37,7 +37,7 @@ def translate_with_nmt_model(args: argparse.Namespace):
                                  translation_tokens,
                                  attention,
                                  n_cols=4,
-                                 figure_path=input_sentence[:10] + ".png")
+                                 figure_path='_'.join(input_sentence[:10].split()) + ".png")
 
 def add_subparser(subparsers: argparse._SubParsersAction):
   parser = subparsers.add_parser('translate', help='Translate with a trained NMT model')

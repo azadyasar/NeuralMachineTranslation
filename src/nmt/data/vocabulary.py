@@ -18,6 +18,8 @@ class Vocabulary(object):
   def decode(self, tokens: List[int]) -> str:
     return self.tokenizer.Decode(tokens)
   
+  def decode_with_check(self, tokens: List[int]) -> str:
+    return self.tokenizer.DecodeIdsWithCheck(tokens)
   
   def id_to_piece(self, id: int) -> str:
     return self.tokenizer.IdToPiece(id)

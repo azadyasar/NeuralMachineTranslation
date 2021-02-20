@@ -47,7 +47,8 @@ class Translator(object):
       if pred_token == self.config.trg_vocab.eos_idx:
         break
     
-    translation = self.config.trg_vocab.decode(trg_indexes)
+    
+    translation = self.config.trg_vocab.decode_with_check(trg_indexes)
     trg_tokens = [self.config.trg_vocab.id_to_piece(idx) for idx in trg_indexes]
     return translation, trg_tokens, attention, self_attn
   
