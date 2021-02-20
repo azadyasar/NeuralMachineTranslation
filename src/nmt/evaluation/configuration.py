@@ -22,12 +22,11 @@ class TransformerModelConfig(object):
                dec_pf_dim: int,
                enc_dropout: float,
                dec_dropout: float,
-               src_pad_idx: int,
-               trg_pad_idx: int,
                device: str,
                src_vocab: Vocabulary,
                trg_vocab: Vocabulary,
-               max_length: int = 172,
+               max_length: int,
+               batch_sz: int,
                model_path: str = 'transformer_nmt.pt'):
     self.input_dim = input_dim
     self.output_dim = output_dim
@@ -40,13 +39,13 @@ class TransformerModelConfig(object):
     self.dec_pf_dim = dec_pf_dim
     self.enc_dropout = enc_dropout
     self.dec_dropout = dec_dropout
-    self.src_pad_idx = src_pad_idx
-    self.trg_pad_idx = trg_pad_idx
     self.device = device
-    # TODO 
     self.src_vocab = src_vocab
     self.trg_vocab = trg_vocab
+    self.src_pad_idx = self.src_vocab.pad_idx
+    self.trg_pad_idx = self.trg_vocab.pad_idx
     self.max_length = max_length
+    self.batch_sz = batch_sz
     self.model_path = model_path
     
   def load_model(self):

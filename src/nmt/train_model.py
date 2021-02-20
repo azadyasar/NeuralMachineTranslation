@@ -4,6 +4,9 @@ from nmt.data import Vocabulary, Dataset
 from nmt.training import Trainer, TransformerModelConfig
 from nmt.util import get_device
 
+import logging
+logger = logging.getLogger("Trainer")
+
 def train_nmt_model(args: argparse.Namespace):
   source_vocab = Vocabulary(args.src_vocab)
   target_vocab = Vocabulary(args.trg_vocab)
@@ -50,6 +53,9 @@ def train_nmt_model(args: argparse.Namespace):
   test_dataset.read_and_index()
   
   trainer.train(train_dataset=train_dataset, valid_dataset=eval_dataset)
+  
+  logger.info("\n\nTraining completed. Evaluating model on the test dataset.")
+  trainer.evaluate_(eval_dataset=test_dataset)
 
 def add_subparser(subparsers: argparse._SubParsersAction):
   parser = subparsers.add_parser('train', help='Train NMT model')

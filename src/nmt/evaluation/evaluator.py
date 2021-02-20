@@ -1,7 +1,7 @@
 from nmt.evaluation import TransformerModelConfig
+from nmt.data import Dataset
 import torch
 import torch.nn as nn
-from torchtext.data import BucketIterator
 from torchtext.data.metrics import bleu_score
 from tqdm import tqdm
 import time
@@ -19,12 +19,12 @@ class Evaluator(object):
     self.criterion = nn.CrossEntropyLoss(ignore_index=self.config.trg_pad_idx)
     
   def test(self,
-            test_iterator: BucketIterator):
+            test_dataset: Dataset):
     self.model.eval()
     epoch_loss = 0
     
     with torch.no_grad():
-        for batch in tqdm(test_iterator):
+        for batch in tqdm(test_dataset.generate(self.config.batch_sz)):
             src = batch.src
             trg = batch.trg
 
@@ -42,13 +42,12 @@ class Evaluator(object):
             loss = self.criterion(output, trg)
             epoch_loss += loss.item()
         
-    test_loss = epoch_loss / len(test_iterator)
+    test_loss = epoch_loss / len(test_dataset)
     logger.info(f'| Test Loss: {test_loss:.3f} | Test PPL: {np.exp(test_loss):7.3f} |')
     return test_loss
   
   def translate_sentence_vectorized(self, src_tensor, max_len=50):
     self.model.eval()
-    trg_field = self.config.trg_vocab.vocab
     
     assert isinstance(src_tensor, torch.Tensor)
     src_mask = self.model.make_src_mask(src_tensor)
@@ -57,7 +56,7 @@ class Evaluator(object):
       enc_src = self.model.encoder(src_tensor, src_mask)
       # enc_src = [batch_sz, src_len, hid_dim]
 
-    trg_indexes = [[trg_field.vocab.stoi[trg_field.init_token]] for _ in range(len(src_tensor))]
+    trg_indexes = [[self.config.trg_vocab.bos_idx] for _ in range(len(src_tensor))]
     # Even though some examples might have been completed by producing a <eos> token
     # we still need to feed them through the model because others are not yet finished
     # and all examples act as a batch. Once every single sentence prediction encounters
@@ -71,7 +70,7 @@ class Evaluator(object):
       pred_tokens = output.argmax(2)[:,-1]
       for i, pred_token_i in enumerate(pred_tokens):
         trg_indexes[i].append(pred_token_i)
-        if pred_token_i == trg_field.vocab.stoi[trg_field.eos_token]:
+        if pred_token_i == self.config.trg_vocab.eos_idx:
           translations_done[i] = 1
       if all(translations_done):
         break
@@ -82,32 +81,29 @@ class Evaluator(object):
     for trg_sentence in trg_indexes:
       pred_sentence = []
       for i in range(1, len(trg_sentence)):
-        if trg_sentence[i] == trg_field.vocab.stoi[trg_field.eos_token]:
+        if trg_sentence[i] == self.config.trg_vocab.eos_idx:
           break
-        pred_sentence.append(trg_field.vocab.itos[trg_sentence[i]])
+        pred_sentence.append(self.config.trg_vocab.id_to_piece(trg_sentence[i]))
       pred_sentences.append(pred_sentence)
 
     return pred_sentences, attention
-  
-  from torchtext.data.metrics import bleu_score
 
-  def calculate_bleu_score(self, iterator: BucketIterator, max_len = 50) -> float:
-    trg_field = self.config.trg_vocab.vocab
+  def calculate_bleu_score(self, test_dataset: Dataset, max_len = 50) -> float:
     trgs = []
     pred_trgs = []
     
     with torch.no_grad():
-      for batch in tqdm(iterator):
+      for batch in tqdm(test_dataset.generate(self.config.batch_sz)):
         src = batch.src
         trg = batch.trg
         _trgs = []
         for sentence in trg:
           tmp = []
           for i in sentence[1:]:
-            if i == trg_field.vocab.stoi[trg_field.eos_token] or\
-              i == trg_field.vocab.stoi[trg_field.pad_token]:
+            if i == self.config.trg_vocab.eos_idx or\
+              i == self.config.trg_vocab.pad_idx:
               break
-            tmp.append(trg_field.vocab.itos[i])
+            tmp.append(self.config.trg_vocab.id_to_piece(i))
           _trgs.append([tmp])
         trgs += _trgs
         pred_trg, _ = self.translate_sentence_vectorized(src, max_len=max_len)
