@@ -3,6 +3,7 @@ import argparse
 from nmt.data import Vocabulary, Dataset
 from nmt.training import Trainer, TransformerModelConfig
 from nmt.util import get_device
+import numpy as np
 
 import logging
 logger = logging.getLogger("Trainer")
@@ -55,7 +56,8 @@ def train_nmt_model(args: argparse.Namespace):
   trainer.train(train_dataset=train_dataset, valid_dataset=eval_dataset)
   
   logger.info("\n\nTraining completed. Evaluating model on the test dataset.")
-  trainer.evaluate_(eval_dataset=test_dataset)
+  test_loss = trainer.evaluate_(eval_dataset=test_dataset)
+  logger.info(f'\nTest Loss: {test_loss:.4f} |  Test PPL: {np.exp(test_loss):7.3f}')
 
 def add_subparser(subparsers: argparse._SubParsersAction):
   parser = subparsers.add_parser('train', help='Train NMT model')

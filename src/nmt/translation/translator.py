@@ -1,7 +1,7 @@
 from nmt.translation import TransformerModelConfig
+from nmt.data import Dataset
 import torch
 import torch.nn as nn
-from torchtext.data import BucketIterator
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
