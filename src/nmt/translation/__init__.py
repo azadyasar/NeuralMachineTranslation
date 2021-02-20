@@ -1,0 +1,1 @@
+from nmt.translation.configuration import TransformerModelConfig

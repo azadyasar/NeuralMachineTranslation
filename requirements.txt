@@ -1,0 +1,6 @@
+torch
+sentencepiece
+torchtext==0.8
+tqdm
+matplotlib
+numpy

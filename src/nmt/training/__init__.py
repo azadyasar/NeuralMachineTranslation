@@ -1,0 +1,1 @@
+from nmt.training.configuration import TransformerModelConfig

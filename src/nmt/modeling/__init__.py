@@ -1,1 +1,1 @@
-from nmt.modeling.transformer import Transformer
+from nmt.modeling.transformer import (Transformer, Encoder, Decoder)
