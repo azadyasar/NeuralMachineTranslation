@@ -8,8 +8,8 @@ def train_nmt_model(args: argparse.Namespace):
   source_vocab = Vocabulary(args.src_tokenizer, args.src_vocab)
   target_vocab = Vocabulary(args.trg_tokenizer, args.trg_vocab)
   device = get_device()
-  config = TransformerModelConfig(input_dim=len(source_vocab.vocab),
-                                  output_dim=len(target_vocab.vocab),
+  config = TransformerModelConfig(input_dim=len(source_vocab.vocab.vocab),
+                                  output_dim=len(target_vocab.vocab.vocab),
                                   hid_dim=args.hid_dim,
                                   enc_layers=args.enc_layers,
                                   dec_layers=args.dec_layers,
