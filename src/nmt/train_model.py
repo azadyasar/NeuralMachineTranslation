@@ -77,13 +77,13 @@ def add_subparser(subparsers: argparse._SubParsersAction):
   group = parser.add_argument_group('Transformer model configurations')
   group.add_argument('--hid_dims', default=256, type=int,
                        help='hidden vector dimensions')
-  group.add_argument('--enc_layers', default=8, type=int,
+  group.add_argument('--enc_layers', default=4, type=int,
                        help='number of encoder layers')
-  group.add_argument('--dec_layers', default=8, type=int,
+  group.add_argument('--dec_layers', default=4, type=int,
                        help='number of decoder layers')
-  group.add_argument('--enc_heads', default=4, type=int,
+  group.add_argument('--enc_heads', default=8, type=int,
                        help='number of encoder attention heads')
-  group.add_argument('--dec_heads', default=4, type=int,
+  group.add_argument('--dec_heads', default=8, type=int,
                        help='number of decoder attention heads')
   group.add_argument('--enc_pf_dim', default=256*4, type=int,
                        help='encoder position-wise feed forward dimension. hid_dims * 4 is suggested.')
@@ -97,7 +97,7 @@ def add_subparser(subparsers: argparse._SubParsersAction):
                        help='encoder dropout rate')
   group.add_argument('--enc_dropout', default=0.25, type=float,
                        help='encoder dropout rate')
-  group.add_argument('--dec_dropout', default=0.25, type=int,
+  group.add_argument('--dec_dropout', default=0.25, type=float,
                        help='decoder dropout rate')
   group.add_argument('--wd_rate', default=1e-4, type=float,
                        help='weight decay rate')
