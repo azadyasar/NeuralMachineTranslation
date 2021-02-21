@@ -66,7 +66,7 @@ python -m nmt translate --src_vocab ../data/tr_sp.model \
                         --dec_dropout 0.35 \
 ```
 
-Here is what you should see after the translation script runs successfullyŞ
+Here is what you should see after the translation script runs successfully
 <img src="figures/translation.png" alt="Translation screen">
 
 Attention map of the translation is saved to the same folder as follows:
