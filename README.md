@@ -1,8 +1,12 @@
 # Neural Machine Translation
 This repository contains sequence-to-sequence NMT model implementations along with supplementary scripts to train BPE tokenizers, evaluate NMT models with BLEU score. It currently contains an implementation of the Transformer model. RNN + Attention will be included soon.
 
-## Train a custom Transformer model.
+## Training
+You can train a custom Transformer model with following command. Play with the hyper-parameters to see how they effect the model performance.
 ```bash
+# Extract the provided dataset
+unzip data/eng-tur-dataset.zip -d data/
+cd src
 python -m nmt train --train_dataset ../data/eng-tur-train.csv \
                      --eval_dataset ../data/eng-tur-val.csv \
                      --test_dataset ../data/eng-tur-test.csv \
@@ -25,10 +29,9 @@ python -m nmt train --train_dataset ../data/eng-tur-train.csv \
                      --batch_sz 128 \
                      --save_model_path transformer_tr_en.pt
 ```
-Play with the hyper-parameters to see how they effect the model performance.
 
-## Evaluate a trained Transformer model.
-Run the following command to evaluate a trained model which will print its **loss, perplexity**, and **BLEU score**.  Note that we need the hyper-parameters to construct the model so make sure that they match with the actual hyper-parameters.
+## Evaluation
+Run the following command to evaluate a trained Transformer model which will print its **loss, perplexity**, and **BLEU score**.  Note that we need the hyper-parameters to construct the model first. So make sure that they match with the actual hyper-parameters.
 ```bash
 python -m nmt evaluate  --test_dataset ../data/test.csv \
                         --src_vocab ../data/tr_sp.model \
@@ -46,7 +49,7 @@ python -m nmt evaluate  --test_dataset ../data/test.csv \
                         --batch_sz 128
 ```
 
-## Interactively translate sentence with a trained Transformer model.
+## Translation
 You can interactively translate sentences via a terminal. Simply type your input sentence to the prompt and it will get translated. The attention map of the translation will also be saved.
 ```bash
 python -m nmt translate --src_vocab ../data/tr_sp.model \

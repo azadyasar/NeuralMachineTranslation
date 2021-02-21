@@ -7,8 +7,6 @@ __pycache__/
 
 *tmp*
 
-*png
-
 # C extensions
 *.so
 
