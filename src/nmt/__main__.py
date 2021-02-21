@@ -1,5 +1,6 @@
 import argparse
 from nmt import (train_model,
+                 evaluate_model,
                  translate)
 
 import logging
@@ -12,6 +13,7 @@ if __name__ == '__main__':
   subparsers = parser.add_subparsers(dest='subcommands')
   
   train_model.add_subparser(subparsers)
+  evaluate_model.add_subparser(subparsers)
   translate.add_subparser(subparsers)
   
   args = parser.parse_args()
