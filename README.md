@@ -1,8 +1,8 @@
 # Neural Machine Translation
-This repository contains sequence-to-sequence NMT model implementations along with supplementary scripts to train BPE tokenizers, evaluate NMT models with BLEU score. It currently contains an implementation of the Transformer model. RNN + Attention will be included soon.
+This repository contains sequence-to-sequence NMT model implementations along with the supplementary scripts to train BPE tokenizers, evaluate NMT models with BLEU score. It currently contains an implementation of the Transformer model. RNN + Attention will be included soon.
 
 ## Training
-You can train a custom Transformer model with following command. Play with the hyper-parameters to see how they effect the model performance.
+You can train a custom Transformer model with the following command. Play with the hyper-parameters to see how they effect the model performance.
 ```bash
 # Extract the provided dataset
 unzip data/eng-tur-dataset.zip -d data/
@@ -31,7 +31,7 @@ python -m nmt train --train_dataset ../data/eng-tur-train.csv \
 ```
 
 ## Evaluation
-Run the following command to evaluate a trained Transformer model which will print its **loss, perplexity**, and **BLEU score**.  Note that we need the hyper-parameters to construct the model first. So make sure that they match with the actual hyper-parameters.
+Run the following command to evaluate a trained Transformer model which will print its **loss, perplexity**, and **BLEU score**.  Note that we need the hyper-parameters of the model to construct the model first. So make sure that they match with the actual hyper-parameters of the trained model.
 ```bash
 python -m nmt evaluate  --test_dataset ../data/test.csv \
                         --src_vocab ../data/tr_sp.model \
@@ -73,9 +73,22 @@ Attention map of the translation is saved to the same folder as follows:
 <img src="figures/attention_map_ex.png" alt="Translation screen">
 
 ## Trained model
-If you only want to experiment with the trained model. You can download it as follows:
+If you only want to experiment with the trained model. You can download and run it as follows:
 ```bash
+cd src
 wget https://storage.googleapis.com/deep-learning-models/NMT/transformer_tr_en.pt
+python -m nmt translate --src_vocab ../data/tr_sp.model \
+                        --trg_vocab ../data/en_sp.model \
+                        --model_path transformer_tr_en.pt \
+                        --hid_dims 256 \
+                        --enc_layers 4 \
+                        --dec_layers 4 \
+                        --enc_heads 8 \
+                        --dec_heads 8 \
+                        --enc_pf_dim 1024 \
+                        --dec_pf_dim 1024 \
+                        --enc_dropout 0.35 \
+                        --dec_dropout 0.35 \
 ```
 
 ### Train custom BPE tokenizers
