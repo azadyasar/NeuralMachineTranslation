@@ -72,6 +72,12 @@ Here is what you should see after the translation script runs successfullyŞ
 Attention map of the translation is saved to the same folder as follows:
 <img src="figures/attention_map_ex.png" alt="Translation screen">
 
+## Trained model
+If you only want to experiment with the trained model. You can download it as follows:
+```bash
+wget https://storage.googleapis.com/deep-learning-models/NMT/transformer_tr_en.pt
+```
+
 ### Train custom BPE tokenizers
 In order to train a custom BPE model, you can run the *train_bpe* script by issuing the following command. sentences.tsv contain a tsv file with *en - tr* sentence pairs.
 ```
