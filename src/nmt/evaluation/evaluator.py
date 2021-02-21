@@ -109,5 +109,6 @@ class Evaluator(object):
         pred_trg, _ = self.translate_sentence_vectorized(src, max_len=max_len)
         pred_trgs += pred_trg
     
-    logger.info(f'BLEU score = {bleu_score*100:.2f}')
-    return pred_trgs, trgs, bleu_score(pred_trgs, trgs)
+    final_bleu_score = bleu_score(pred_trgs, trgs)
+    logger.info(f'BLEU score = {final_bleu_score*100:.2f}')
+    return pred_trgs, trgs, final_bleu_score
