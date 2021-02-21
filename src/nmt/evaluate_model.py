@@ -64,7 +64,7 @@ def add_subparser(subparsers: argparse._SubParsersAction):
                        help='maximum number of tokens')
   group.add_argument('--enc_dropout', default=0.25, type=float,
                       help='encoder dropout rate')
-  group.add_argument('--dec_dropout', default=0.25, type=int,
+  group.add_argument('--dec_dropout', default=0.25, type=float,
                        help='decoder dropout rate')
   group.add_argument('--batch_sz', default=128, type=int,
                       help='batch size')
