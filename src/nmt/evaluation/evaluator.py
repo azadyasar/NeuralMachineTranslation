@@ -46,7 +46,7 @@ class Evaluator(object):
     logger.info(f'| Test Loss: {test_loss:.3f} | Test PPL: {np.exp(test_loss):7.3f} |')
     return test_loss
   
-  def translate_sentence_vectorized(self, src_tensor, max_len=50):
+  def translate_sentence_vectorized(self, src_tensor, max_len=128):
     self.model.eval()
     
     assert isinstance(src_tensor, torch.Tensor)
@@ -88,7 +88,7 @@ class Evaluator(object):
 
     return pred_sentences, attention
 
-  def calculate_bleu_score(self, test_dataset: Dataset, max_len = 50) -> float:
+  def calculate_bleu_score(self, test_dataset: Dataset, max_len = 128) -> float:
     trgs = []
     pred_trgs = []
     
@@ -108,4 +108,6 @@ class Evaluator(object):
         trgs += _trgs
         pred_trg, _ = self.translate_sentence_vectorized(src, max_len=max_len)
         pred_trgs += pred_trg
+    
+    logger.info(f'BLEU score = {bleu_score*100:.2f}')
     return pred_trgs, trgs, bleu_score(pred_trgs, trgs)

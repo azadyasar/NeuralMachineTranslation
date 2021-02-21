@@ -17,8 +17,6 @@ class Translator(object):
     self.config = config
     self.model = config.load_model()
     
-    self.criterion = nn.CrossEntropyLoss(ignore_index=self.config.trg_pad_idx)
-    
   def translate(self,
                 sentence: str,
                 max_len: int = 100) -> str:

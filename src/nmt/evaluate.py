@@ -1,12 +1,12 @@
 import argparse
-from nmt.data import Vocabulary
-from nmt.translation import TransformerModelConfig, Translator
+from nmt.data import Vocabulary, Dataset
+from nmt.evaluation import TransformerModelConfig, Evaluator
 from nmt.util import get_device
 
 import logging
-logger = logging.getLogger("Translator")
+logger = logging.getLogger("Evaluator")
 
-def translate_with_nmt_model(args: argparse.Namespace):
+def evaluate_model(args: argparse.Namespace):
   source_vocab = Vocabulary(args.src_vocab)
   target_vocab = Vocabulary(args.trg_vocab)
   device = get_device()
@@ -25,21 +25,25 @@ def translate_with_nmt_model(args: argparse.Namespace):
                                   src_vocab=source_vocab,
                                   trg_vocab=target_vocab,
                                   max_length=args.max_len,
+                                  batch_sz=args.batch_sz,
                                   model_path=args.model_path)
-  translator = Translator(config=config)
   
-  while True:
-    input_sentence = input(">>")
-    translation, translation_tokens, attention, _ = translator.translate(input_sentence.lower())
-    print("==>" + translation + "\t\tAttention map is being saved to " + input_sentence[:10] + ".png")
-    translator.display_attention(input_sentence,
-                                 translation_tokens,
-                                 attention,
-                                 n_cols=4,
-                                 figure_path='_'.join(input_sentence[:10].split()) + ".png")
+  evaluator = Evaluator(config)
+  
+  test_dataset = Dataset(path=args.test_dataset,
+                         src_vocab=source_vocab,
+                         trg_vocab=target_vocab,
+                         device=device)
+  test_dataset.read_and_index()
+  
+  logger.info("Calculating model loss..")
+  evaluator.test(test_dataset)
+  logger.info("Calculating model BLEU score..")
+  evaluator.calculate_bleu_score(test_dataset)
+
 
 def add_subparser(subparsers: argparse._SubParsersAction):
-  parser = subparsers.add_parser('translate', help='Translate with a trained NMT model')
+  parser = subparsers.add_parser('evaluate', help='Evaluate a trained NMT model')
   
   group = parser.add_argument_group('Transformer model configurations')
   group.add_argument('--hid_dims', default=256, type=int,
@@ -62,12 +66,18 @@ def add_subparser(subparsers: argparse._SubParsersAction):
                       help='encoder dropout rate')
   group.add_argument('--dec_dropout', default=0.25, type=int,
                        help='decoder dropout rate')
+  group.add_argument('--batch_sz', default=128, type=int,
+                      help='batch size')
   
-  group = parser.add_argument_group('Vocabulary and model paths')
+  group = parser.add_argument_group('Vocabulary, dataset, and model paths')
+  group.add_argument('--test_dataset', required=True,
+                     help='path to the test dataset')
   group.add_argument('--src_vocab', required=True,
                      help='source BPE model file path')
   group.add_argument('--trg_vocab', required=True,
                      help='target BPE model file path')
   group.add_argument('--model_path', default='transformer_nmt.pt',
                       help='trained model path')
-  parser.set_defaults(func=translate_with_nmt_model)
+  
+  
+  parser.set_defaults(func=evaluate_model)

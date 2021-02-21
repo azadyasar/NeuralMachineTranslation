@@ -1,1 +1,2 @@
 from nmt.evaluation.configuration import TransformerModelConfig
+from nmt.evaluation.evaluator import Evaluator
