@@ -66,6 +66,12 @@ python -m nmt translate --src_vocab ../data/tr_sp.model \
                         --dec_dropout 0.35 \
 ```
 
+Here is how you should see after the translation script runs successfully.
+<img src="figures/translation.png" alt="Translation screen">
+
+Attention map of the translation are saved into the same folder as follows:
+<img src="figures/attention_map_ex.png" alt="Translation screen">
+
 ### Train custom BPE tokenizers
 In order to train a custom BPE model, you can run the *train_bpe* script by issuing the following command. sentences.tsv contain a tsv file with *en - tr* sentence pairs.
 ```
