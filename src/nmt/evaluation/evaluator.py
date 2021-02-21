@@ -83,7 +83,7 @@ class Evaluator(object):
       for i in range(1, len(trg_sentence)):
         if trg_sentence[i] == self.config.trg_vocab.eos_idx:
           break
-        pred_sentence.append(self.config.trg_vocab.id_to_piece(trg_sentence[i]))
+        pred_sentence.append(self.config.trg_vocab.id_to_piece(trg_sentence[i].item()))
       pred_sentences.append(pred_sentence)
 
     return pred_sentences, attention
@@ -103,7 +103,7 @@ class Evaluator(object):
             if i == self.config.trg_vocab.eos_idx or\
               i == self.config.trg_vocab.pad_idx:
               break
-            tmp.append(self.config.trg_vocab.id_to_piece(i))
+            tmp.append(self.config.trg_vocab.id_to_piece(i.item()))
           _trgs.append([tmp])
         trgs += _trgs
         pred_trg, _ = self.translate_sentence_vectorized(src, max_len=max_len)
