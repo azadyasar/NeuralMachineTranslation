@@ -48,7 +48,7 @@ class Translator(object):
     
     translation = self.config.trg_vocab.decode_with_check(trg_indexes)
     trg_tokens = [self.config.trg_vocab.id_to_piece(idx) for idx in trg_indexes]
-    return translation, trg_tokens, attention, self_attn
+    return translation, trg_tokens[1:], attention, self_attn
   
   def display_attention(self, sentence, translation_tokens, attention, n_cols=4, figure_path = 'attention_figure.png'):
     # assert n_rows * n_cols == n_heads
