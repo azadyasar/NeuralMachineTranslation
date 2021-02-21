@@ -62,54 +62,58 @@ class Trainer(object):
   def train_(self, train_dataset: Dataset):
     self.model.train()
     epoch_loss = 0
-    
+    batch_count = 0
     for i, batch in tqdm(enumerate(train_dataset.generate(self.config.batch_sz))):  
-        src = batch.src
-        trg = batch.trg
-        
-        self.optimizer.zero_grad()        
-        output, _ = self.model(src, trg[:, :-1])
-        # trg = [batch_sz, trg_len]
-        # output = [batch_sz, trg_len - 1, output_dim]
-
-        output_dim = output.shape[-1]
-
-        output = output.contiguous().view(-1, output_dim)
-        trg = trg[:,1:].contiguous().view(-1)
-        # output = [batch_sz * trg_len - 1, output_dim]
-        # trg = [batch_sz * trg_len - 1]
+      batch_count += 1
       
-        loss = self.criterion(output, trg)
-        loss.backward()
+      src = batch.src
+      trg = batch.trg
+      
+      self.optimizer.zero_grad()        
+      output, _ = self.model(src, trg[:, :-1])
+      # trg = [batch_sz, trg_len]
+      # output = [batch_sz, trg_len - 1, output_dim]
 
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clip)
-        self.optimizer.step()
-        
-        epoch_loss += loss.item()   
+      output_dim = output.shape[-1]
 
-    return epoch_loss / len(train_dataset)
+      output = output.contiguous().view(-1, output_dim)
+      trg = trg[:,1:].contiguous().view(-1)
+      # output = [batch_sz * trg_len - 1, output_dim]
+      # trg = [batch_sz * trg_len - 1]
+    
+      loss = self.criterion(output, trg)
+      loss.backward()
+
+      torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clip)
+      self.optimizer.step()
+      
+      epoch_loss += loss.item()   
+
+    return epoch_loss / batch_count
   
   def evaluate_(self, eval_dataset: Dataset):
     self.model.eval()
     epoch_loss = 0
+    batch_count = 0
     
     with torch.no_grad():
-        for batch in tqdm(eval_dataset.generate(self.config.batch_sz)):
-            src = batch.src
-            trg = batch.trg
+      for batch in tqdm(eval_dataset.generate(self.config.batch_sz)):
+        batch_count += 1
+        src = batch.src
+        trg = batch.trg
 
-            output, _ = self.model(src, trg[:,:-1])
-            # output = [batch_sz, trg_len - 1, output_dim]
-            # trg = [batch_sz, trg_len]
+        output, _ = self.model(src, trg[:,:-1])
+        # output = [batch_sz, trg_len - 1, output_dim]
+        # trg = [batch_sz, trg_len]
 
-            output_dim = output.shape[-1]
+        output_dim = output.shape[-1]
 
-            output = output.contiguous().view(-1, output_dim)
-            trg = trg[:, 1:].contiguous().view(-1)
-            # output = [batch_sz * trg_len - 1, output_dim]
-            # trg = [batch_sz * trg_len - 1]
+        output = output.contiguous().view(-1, output_dim)
+        trg = trg[:, 1:].contiguous().view(-1)
+        # output = [batch_sz * trg_len - 1, output_dim]
+        # trg = [batch_sz * trg_len - 1]
 
-            loss = self.criterion(output, trg)
-            epoch_loss += loss.item()
+        loss = self.criterion(output, trg)
+        epoch_loss += loss.item()
         
-    return epoch_loss / len(eval_dataset)
+    return epoch_loss / batch_count
