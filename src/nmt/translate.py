@@ -31,12 +31,14 @@ def translate_with_nmt_model(args: argparse.Namespace):
   while True:
     input_sentence = input(">>")
     translation, translation_tokens, attention, _ = translator.translate(input_sentence.lower())
-    print("==>" + translation + "\t\tAttention map is being saved to " + input_sentence[:10] + ".png")
+    figure_path = '_'.join(input_sentence[:10].split()) + ".png"
+    
+    print("==>" + translation + "\t\tAttention map is being saved to " + figure_path)
     translator.display_attention(input_sentence,
                                  translation_tokens,
                                  attention,
                                  n_cols=4,
-                                 figure_path='_'.join(input_sentence[:10].split()) + ".png")
+                                 figure_path=figure_path)
 
 def add_subparser(subparsers: argparse._SubParsersAction):
   parser = subparsers.add_parser('translate', help='Translate with a trained NMT model')
