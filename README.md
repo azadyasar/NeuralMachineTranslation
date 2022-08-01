@@ -33,7 +33,7 @@ python -m nmt train --train_dataset ../data/eng-tur-train.csv \
 ## Evaluation
 Run the following command to evaluate a trained Transformer model which will print its **loss, perplexity**, and **BLEU score**.  Note that we need the hyper-parameters of the model to construct the model first. So make sure that they match with the actual hyper-parameters of the trained model.
 ```bash
-python -m nmt evaluate  --test_dataset ../data/test.csv \
+python -m nmt evaluate  --test_dataset ../data/eng-tur-test.csv \
                         --src_vocab ../data/tr_sp.model \
                         --trg_vocab ../data/en_sp.model \
                         --model_path transformer_tr_en.pt \
